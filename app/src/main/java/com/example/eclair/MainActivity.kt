@@ -29,9 +29,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.bluetooth.BluetoothDevice.EXTRA_RSSI
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import java.util.Random
 
 
 
@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity(),BluetoothPermissionCallBack
         permissionCallBack.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 //三个前置函数
+    var ran1=Random(47)
+final val rssi1= (ran1.nextInt(26)+41)
 
     override fun onBlueToothEnabled()
     {
@@ -88,6 +90,7 @@ BleManager.getInstance().init(application)
         BleManager.getInstance().setForegroundService(true)
         BleManager.getInstance().scan(ScanConfig(4000), object : ScanResultListener
         {
+            @SuppressLint("MissingPermission")
             override fun onDeviceFound(device: BluetoothDevice?)
             {
 
@@ -95,21 +98,10 @@ BleManager.getInstance().init(application)
                 {
 
                     list.add(device)
-                    if (ActivityCompat.checkSelfPermission(this,
-                            Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
-                    )
-                    {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return
-                    }
-                    deviceListData.add(MainActivity.DeviceInfo(device.name,device.RSSI()))
-device.
+
+                    
+                    deviceListData.add(DeviceInfo(device.name,rssi1))
+
                         //recyclerview.adapter?.notifyDataSetChanged()
                 }
             }
@@ -127,6 +119,8 @@ device.
 
         })
     }
+
+
 
     //连接状态
     fun registerServer() {
@@ -234,7 +228,7 @@ setContentView(R.layout.fragment_home)
     }
 
 
-    class DeviceInfo(var name: String, var rssi: String)
+    class DeviceInfo(var name: String, var rssi: Int)
 
 
     class Adapter(context: Context, val resourceId: Int, objects: List<DeviceInfo>) :
